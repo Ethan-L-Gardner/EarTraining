@@ -14,8 +14,9 @@ root.render(
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/eartraining" element={<EarTraining />} />
-        <Route path="/eartraining/:level" element={<TrainingPage />} />
+        <Route path="/training/:level" element={<TrainingPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
 );
+

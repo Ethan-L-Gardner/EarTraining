@@ -1,75 +1,182 @@
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+const INTERVALS = [
+  { name: "Minor 2nd", semitones: 1 },
+  { name: "Major 2nd", semitones: 2 },
+  { name: "Minor 3rd", semitones: 3 },
+  { name: "Major 3rd", semitones: 4 },
+  { name: "Perfect 4th", semitones: 5 },
+  { name: "Tritone", semitones: 6 },
+  { name: "Perfect 5th", semitones: 7 },
+  { name: "Minor 6th", semitones: 8 },
+  { name: "Major 6th", semitones: 9 },
+  { name: "Minor 7th", semitones: 10 },
+  { name: "Major 7th", semitones: 11 },
+  { name: "Octave", semitones: 12 },
+];
+
+function getRandomInterval() {
+  const index = Math.floor(Math.random() * INTERVALS.length);
+  return INTERVALS[index];
+}
+
+function generateOptions(correctInterval) {
+  const options = new Set();
+  options.add(correctInterval.name);
+
+  while (options.size < 4) {
+    const randomInterval = INTERVALS[Math.floor(Math.random() * INTERVALS.length)];
+    options.add(randomInterval.name);
+  }
+
+  // Shuffle the options
+  return Array.from(options).sort(() => Math.random() - 0.5);
+}
+
 export default function TrainingPage() {
-  const { level } = useParams();
+  const { level } = useParams(); // get level from URL param (easy, medium, hard)
   const navigate = useNavigate();
 
-  const capitalizedLevel = level.charAt(0).toUpperCase() + level.slice(1);
+  const [question, setQuestion] = useState(getRandomInterval());
+  const [options, setOptions] = useState(generateOptions(question));
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [feedback, setFeedback] = useState(null);
+
+  function handleAnswer(option) {
+    setSelectedAnswer(option);
+    if (option === question.name) {
+      setFeedback("Correct! 🎉");
+    } else {
+      setFeedback(`Oops! The correct answer was ${question.name}.`);
+    }
+  }
+
+  function nextQuestion() {
+    const newQuestion = getRandomInterval();
+    setQuestion(newQuestion);
+    setOptions(generateOptions(newQuestion));
+    setSelectedAnswer(null);
+    setFeedback(null);
+  }
 
   return (
     <div style={styles.container}>
-      <button style={styles.backButton} onClick={() => navigate(-1)}>
-        ← Back
-      </button>
+      <h1 style={styles.title}>Ear Training - {level?.toUpperCase() || "Level"}</h1>
+      <p style={styles.subtitle}>What interval did you hear?</p>
 
-      <h1 style={styles.title}>{capitalizedLevel} Level Ear Training</h1>
-      <p style={styles.description}>
-        Welcome to the <strong>{capitalizedLevel}</strong> level. Here you will find interactive exercises to train your ear and improve your musical skills.
-      </p>
-
-      {/* Placeholder for actual training content */}
-      <div style={styles.exerciseBox}>
-        <p style={{ fontSize: "1.2rem", color: "#555" }}>
-          🎧 [Exercise content will go here — sounds, quizzes, etc.] 🎵
-        </p>
+      {/* Placeholder for interval audio (replace with actual sound playing later) */}
+      <div style={styles.audioPlaceholder}>
+        🎵 Interval Sound: <strong>{question.name}</strong> (simulate sound here)
       </div>
+
+      <div style={styles.optionsContainer}>
+        {options.map((option) => (
+          <button
+            key={option}
+            onClick={() => handleAnswer(option)}
+            disabled={!!selectedAnswer}
+            style={{
+              ...styles.optionButton,
+              backgroundColor:
+                selectedAnswer === option
+                  ? option === question.name
+                    ? "#4CAF50"
+                    : "#F44336"
+                  : "#fff",
+              color: selectedAnswer === option ? "white" : "#333",
+              cursor: selectedAnswer ? "default" : "pointer",
+            }}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+
+      {feedback && (
+        <>
+          <p style={styles.feedback}>{feedback}</p>
+          <button style={styles.nextButton} onClick={nextQuestion}>
+            Next Question
+          </button>
+          <button
+            style={styles.backButton}
+            onClick={() => navigate("/eartraining")}
+          >
+            Back to Levels
+          </button>
+        </>
+      )}
     </div>
   );
 }
 
 const styles = {
   container: {
-    minHeight: "100vh",
-    padding: "3rem 2rem",
-    background: "#f5f7fa",
-    fontFamily: "'Poppins', sans-serif",
+    height: "100vh",
+    padding: "2rem",
+    boxSizing: "border-box",
+    background: "linear-gradient(135deg, #6a11cb, #2575fc)",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-  },
-  backButton: {
-    alignSelf: "flex-start",
-    marginBottom: "1.5rem",
-    backgroundColor: "#764ba2",
     color: "white",
-    border: "none",
-    padding: "0.6rem 1.2rem",
-    fontSize: "1rem",
-    borderRadius: "8px",
-    cursor: "pointer",
-    boxShadow: "0 4px 8px rgba(118, 75, 162, 0.3)",
-    transition: "background-color 0.3s ease",
+    textAlign: "center",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    justifyContent: "center",
   },
   title: {
     fontSize: "3rem",
-    color: "#333",
-    marginBottom: "0.5rem",
-    fontWeight: "800",
+    marginBottom: "0.3rem",
   },
-  description: {
+  subtitle: {
+    fontSize: "1.3rem",
+    marginBottom: "1.5rem",
+  },
+  audioPlaceholder: {
+    fontSize: "1.5rem",
+    marginBottom: "2rem",
+    fontWeight: "600",
+  },
+  optionsContainer: {
+    display: "flex",
+    gap: "1rem",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    maxWidth: "600px",
+    marginBottom: "2rem",
+  },
+  optionButton: {
+    flex: "1 1 140px",
+    padding: "1rem 1.5rem",
     fontSize: "1.2rem",
-    maxWidth: "600px",
-    color: "#666",
-    marginBottom: "3rem",
-    textAlign: "center",
+    borderRadius: "10px",
+    border: "none",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+    userSelect: "none",
   },
-  exerciseBox: {
-    width: "100%",
-    maxWidth: "600px",
-    padding: "2rem",
-    borderRadius: "16px",
-    backgroundColor: "white",
-    boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
-    textAlign: "center",
+  feedback: {
+    fontSize: "1.4rem",
+    marginBottom: "1rem",
+    fontWeight: "700",
+  },
+  nextButton: {
+    backgroundColor: "#4CAF50",
+    border: "none",
+    padding: "1rem 2rem",
+    borderRadius: "12px",
+    color: "white",
+    fontWeight: "700",
+    cursor: "pointer",
+    marginBottom: "1rem",
+  },
+  backButton: {
+    backgroundColor: "#555",
+    border: "none",
+    padding: "0.8rem 2rem",
+    borderRadius: "12px",
+    color: "white",
+    fontWeight: "600",
+    cursor: "pointer",
   },
 };
