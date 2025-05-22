@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 const INTERVALS = [
@@ -7,7 +7,7 @@ const INTERVALS = [
   { name: "Minor 3rd", semitones: 3 },
   { name: "Major 3rd", semitones: 4 },
   { name: "Perfect 4th", semitones: 5 },
-  { name: "Tritone", semitones: 6 },
+  { name: "Diminished 5th", semitones: 6 },
   { name: "Perfect 5th", semitones: 7 },
   { name: "Minor 6th", semitones: 8 },
   { name: "Major 6th", semitones: 9 },
@@ -30,26 +30,40 @@ function generateOptions(correctInterval) {
     options.add(randomInterval.name);
   }
 
-  // Shuffle the options
   return Array.from(options).sort(() => Math.random() - 0.5);
 }
 
 export default function TrainingPage() {
-  const { level } = useParams(); // get level from URL param (easy, medium, hard)
+  const { level } = useParams(); // 'easy', 'medium', 'hard'
   const navigate = useNavigate();
 
   const [question, setQuestion] = useState(getRandomInterval());
   const [options, setOptions] = useState(generateOptions(question));
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedback, setFeedback] = useState(null);
+  const audioRef = useRef(null);
+
+  // Play audio for easy level
+  useEffect(() => {
+    if (level === "easy") {
+      const fileName = question.name.toLowerCase().replace(/\s/g, "").replace(/[^a-z0-9]/g, "") + ".mp3";
+      const audioPath = `/audio/${fileName}`;
+      if (audioRef.current) {
+        audioRef.current.src = audioPath;
+        audioRef.current.play().catch((e) => {
+          console.warn("Audio playback failed:", e);
+        });
+      }
+    }
+  }, [question, level]);
 
   function handleAnswer(option) {
     setSelectedAnswer(option);
-    if (option === question.name) {
-      setFeedback("Correct! 🎉");
-    } else {
-      setFeedback(`Oops! The correct answer was ${question.name}.`);
-    }
+    setFeedback(
+      option === question.name
+        ? "Correct! 🎉"
+        : `Oops! The correct answer was ${question.name}.`
+    );
   }
 
   function nextQuestion() {
@@ -62,13 +76,15 @@ export default function TrainingPage() {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Ear Training - {level?.toUpperCase() || "Level"}</h1>
+      <h1 style={styles.title}>Ear Training - {level?.toUpperCase()}</h1>
       <p style={styles.subtitle}>What interval did you hear?</p>
 
-      {/* Placeholder for interval audio (replace with actual sound playing later) */}
-      <div style={styles.audioPlaceholder}>
-        🎵 Interval Sound: <strong>{question.name}</strong> (simulate sound here)
-      </div>
+      {level === "easy" && (
+        <audio ref={audioRef} controls style={{ marginBottom: "1.5rem" }}>
+          <source type="audio/mp3" />
+          Your browser does not support the audio element.
+        </audio>
+      )}
 
       <div style={styles.optionsContainer}>
         {options.map((option) => (
@@ -85,7 +101,6 @@ export default function TrainingPage() {
                     : "#F44336"
                   : "#fff",
               color: selectedAnswer === option ? "white" : "#333",
-              cursor: selectedAnswer ? "default" : "pointer",
             }}
           >
             {option}
@@ -133,11 +148,6 @@ const styles = {
     fontSize: "1.3rem",
     marginBottom: "1.5rem",
   },
-  audioPlaceholder: {
-    fontSize: "1.5rem",
-    marginBottom: "2rem",
-    fontWeight: "600",
-  },
   optionsContainer: {
     display: "flex",
     gap: "1rem",
@@ -154,6 +164,7 @@ const styles = {
     border: "none",
     boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
     userSelect: "none",
+    cursor: "pointer",
   },
   feedback: {
     fontSize: "1.4rem",
