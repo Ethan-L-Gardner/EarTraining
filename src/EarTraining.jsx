@@ -52,6 +52,7 @@ const styles = {
     alignItems: "center",
     textAlign: "center",
     boxSizing: "border-box",
+    borderRadius: "12px",  // <-- adds rounded corners
   },
   title: {
     fontSize: "3rem",

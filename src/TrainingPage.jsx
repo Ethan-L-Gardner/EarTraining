@@ -25,7 +25,7 @@ function generateOptions(correctInterval) {
   const options = new Set();
   options.add(correctInterval.name);
 
-  while (options.size < 4) {
+  while (options.size < 8) {
     const randomInterval = INTERVALS[Math.floor(Math.random() * INTERVALS.length)];
     options.add(randomInterval.name);
   }
@@ -139,6 +139,7 @@ const styles = {
     textAlign: "center",
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
     justifyContent: "center",
+    borderRadius: "12px",  // <-- adds rounded corners
   },
   title: {
     fontSize: "3rem",
@@ -148,24 +149,27 @@ const styles = {
     fontSize: "1.3rem",
     marginBottom: "1.5rem",
   },
-  optionsContainer: {
-    display: "flex",
-    gap: "1rem",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    maxWidth: "600px",
-    marginBottom: "2rem",
-  },
-  optionButton: {
-    flex: "1 1 140px",
-    padding: "1rem 1.5rem",
-    fontSize: "1.2rem",
-    borderRadius: "10px",
-    border: "none",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-    userSelect: "none",
-    cursor: "pointer",
-  },
+optionsContainer: {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+  gap: "1rem",
+  maxWidth: "700px",
+  width: "100%",
+  marginBottom: "2rem",
+},
+optionButton: {
+  padding: "1rem",
+  fontSize: "1.1rem",
+  borderRadius: "10px",
+  border: "none",
+  boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+  userSelect: "none",
+  cursor: "pointer",
+  height: "100%",
+  width: "100%",
+  textAlign: "center",
+  transition: "background-color 0.3s ease",
+},
   feedback: {
     fontSize: "1.4rem",
     marginBottom: "1rem",

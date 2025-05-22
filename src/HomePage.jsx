@@ -20,6 +20,7 @@ export default function HomePage() {
 
 const styles = {
   container: {
+    width: "100%",
     height: "100vh",
     padding: "2rem",
     boxSizing: "border-box",
