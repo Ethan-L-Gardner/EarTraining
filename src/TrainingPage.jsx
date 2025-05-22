@@ -43,16 +43,18 @@ export default function TrainingPage() {
   const [feedback, setFeedback] = useState(null);
   const audioRef = useRef(null);
 
-  // Play audio for easy level
   useEffect(() => {
     if (level === "easy") {
-      const fileName = question.name.toLowerCase().replace(/\s/g, "").replace(/[^a-z0-9]/g, "") + ".mp3";
+      const fileName = question.name
+        .toLowerCase()
+        .replace(/\s/g, "")
+        .replace(/[^a-z0-9]/g, "") + ".mp3";
       const audioPath = `/audio/${fileName}`;
       if (audioRef.current) {
         audioRef.current.src = audioPath;
-        audioRef.current.play().catch((e) => {
-          console.warn("Audio playback failed:", e);
-        });
+        audioRef.current
+          .play()
+          .catch((e) => console.warn("Audio playback failed:", e));
       }
     }
   }, [question, level]);
@@ -75,48 +77,69 @@ export default function TrainingPage() {
   }
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Ear Training - {level?.toUpperCase()}</h1>
-      <p style={styles.subtitle}>What interval did you hear?</p>
+    <div className="min-h-screen flex flex-col justify-center items-center p-8 box-border text-center text-gray-900 font-sans">
+      <h1 className="text-4xl font-extrabold mb-2">{`Ear Training - ${level?.toUpperCase()}`}</h1>
+      <p className="text-lg mb-6">What interval did you hear?</p>
 
       {level === "easy" && (
-        <audio ref={audioRef} controls style={{ marginBottom: "1.5rem" }}>
+        <audio
+          ref={audioRef}
+          controls
+          className="mb-6 w-full max-w-md"
+          preload="auto"
+        >
           <source type="audio/mp3" />
           Your browser does not support the audio element.
         </audio>
       )}
 
-      <div style={styles.optionsContainer}>
-        {options.map((option) => (
-          <button
-            key={option}
-            onClick={() => handleAnswer(option)}
-            disabled={!!selectedAnswer}
-            style={{
-              ...styles.optionButton,
-              backgroundColor:
-                selectedAnswer === option
-                  ? option === question.name
-                    ? "#4CAF50"
-                    : "#F44336"
-                  : "#fff",
-              color: selectedAnswer === option ? "white" : "#333",
-            }}
-          >
-            {option}
-          </button>
-        ))}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4 max-w-3xl w-full mb-8">
+        {options.map((option) => {
+          const isSelected = selectedAnswer === option;
+          const isCorrect = option === question.name;
+
+          let bgClass = "bg-white";
+          let textClass = "text-gray-900";
+          if (isSelected) {
+            if (isCorrect) {
+              bgClass = "bg-green-600";
+              textClass = "text-white";
+            } else {
+              bgClass = "bg-red-600";
+              textClass = "text-white";
+            }
+          }
+
+          return (
+            <button
+              key={option}
+              onClick={() => handleAnswer(option)}
+              disabled={!!selectedAnswer}
+              className={`${bgClass} ${textClass} font-semibold py-4 px-6 rounded-xl shadow-md cursor-pointer
+                          transition-colors duration-300 ease-in-out
+                          disabled:cursor-not-allowed disabled:opacity-60
+                          hover:brightness-105 active:scale-95`}
+            >
+              {option}
+            </button>
+          );
+        })}
       </div>
 
       {feedback && (
         <>
-          <p style={styles.feedback}>{feedback}</p>
-          <button style={styles.nextButton} onClick={nextQuestion}>
+          <p className="text-lg font-bold mb-4">{feedback}</p>
+          <button
+            onClick={nextQuestion}
+            className="bg-green-600 text-white font-bold py-3 px-8 rounded-xl shadow-md mb-4
+                       hover:bg-green-700 active:scale-95 transition transform duration-200"
+          >
             Next Question
           </button>
           <button
-            style={styles.backButton}
             onClick={() => navigate("/eartraining")}
+            className="bg-gray-600 text-white font-semibold py-2 px-6 rounded-xl shadow-md
+                       hover:bg-gray-700 active:scale-95 transition transform duration-200"
           >
             Back to Levels
           </button>
@@ -125,73 +148,3 @@ export default function TrainingPage() {
     </div>
   );
 }
-
-const styles = {
-  container: {
-    height: "100vh",
-    padding: "2rem",
-    boxSizing: "border-box",
-    background: "linear-gradient(135deg, #6a11cb, #2575fc)",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    color: "white",
-    textAlign: "center",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    justifyContent: "center",
-    borderRadius: "12px",  // <-- adds rounded corners
-  },
-  title: {
-    fontSize: "3rem",
-    marginBottom: "0.3rem",
-  },
-  subtitle: {
-    fontSize: "1.3rem",
-    marginBottom: "1.5rem",
-  },
-optionsContainer: {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-  gap: "1rem",
-  maxWidth: "700px",
-  width: "100%",
-  marginBottom: "2rem",
-},
-optionButton: {
-  padding: "1rem",
-  fontSize: "1.1rem",
-  borderRadius: "10px",
-  border: "none",
-  boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-  userSelect: "none",
-  cursor: "pointer",
-  height: "100%",
-  width: "100%",
-  textAlign: "center",
-  transition: "background-color 0.3s ease",
-},
-  feedback: {
-    fontSize: "1.4rem",
-    marginBottom: "1rem",
-    fontWeight: "700",
-  },
-  nextButton: {
-    backgroundColor: "#4CAF50",
-    border: "none",
-    padding: "1rem 2rem",
-    borderRadius: "12px",
-    color: "white",
-    fontWeight: "700",
-    cursor: "pointer",
-    marginBottom: "1rem",
-  },
-  backButton: {
-    backgroundColor: "#555",
-    border: "none",
-    padding: "0.8rem 2rem",
-    borderRadius: "12px",
-    color: "white",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
-};

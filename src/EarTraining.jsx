@@ -9,21 +9,24 @@ export default function EarTraining() {
   }
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Ear Training</h1>
-      <p style={styles.subtitle}>
+    <div className="min-h-screen text-white flex flex-col items-center px-6 py-12 text-center box-border rounded-lg">
+      <h1 className="text-5xl font-extrabold mb-4 drop-shadow-lg">
+        Ear Training
+      </h1>
+      <p className="text-lg max-w-xl mb-12 opacity-90">
         Sharpen your musical skills through interactive listening exercises.
       </p>
 
       {/* Harmonic Section */}
-      <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Harmonic Ear Training</h2>
-        <div style={styles.buttonGroup}>
+      <section className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl shadow-md p-8 mb-12 w-full max-w-lg">
+        <h2 className="text-2xl font-semibold mb-6">Harmonic Ear Training</h2>
+        <div className="flex flex-wrap justify-center gap-6">
           {["Easy", "Medium", "Hard"].map((level) => (
             <button
               key={level}
-              style={styles.button}
               onClick={() => handleSelect(level)}
+              className="bg-white text-blue-600 font-semibold py-3 px-8 rounded-xl shadow-sm min-w-[100px] 
+                         hover:bg-blue-100 transition transform duration-200 active:scale-95 cursor-pointer"
             >
               {level}
             </button>
@@ -32,74 +35,12 @@ export default function EarTraining() {
       </section>
 
       {/* Tempo Section */}
-      <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Tempo Ear Training</h2>
-        <p style={styles.tempoNote}>Coming soon: Practice identifying tempos by ear!</p>
+      <section className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl shadow-md p-8 max-w-lg w-full">
+        <h2 className="text-2xl font-semibold mb-3">Tempo Ear Training</h2>
+        <p className="italic opacity-70">
+          Coming soon: Practice identifying tempos by ear!
+        </p>
       </section>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    background: "linear-gradient(135deg, #6a11cb, #2575fc)",
-    color: "white",
-    minHeight: "100vh",
-    padding: "2rem",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    textAlign: "center",
-    boxSizing: "border-box",
-    borderRadius: "12px",  // <-- adds rounded corners
-  },
-  title: {
-    fontSize: "3rem",
-    marginBottom: "0.5rem",
-    textShadow: "2px 2px 6px rgba(0,0,0,0.4)",
-  },
-  subtitle: {
-    fontSize: "1.2rem",
-    opacity: 0.85,
-    maxWidth: "600px",
-    marginBottom: "2rem",
-  },
-  section: {
-    backgroundColor: "rgba(255,255,255,0.15)",
-    padding: "2rem",
-    borderRadius: "15px",
-    marginBottom: "2rem",
-    width: "100%",
-    maxWidth: "600px",
-    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
-  },
-  sectionTitle: {
-    fontSize: "1.8rem",
-    marginBottom: "1rem",
-  },
-  buttonGroup: {
-    display: "flex",
-    gap: "1rem",
-    justifyContent: "center",
-    flexWrap: "wrap",
-  },
-  button: {
-    backgroundColor: "#fff",
-    color: "#2575fc",
-    border: "none",
-    padding: "1rem 2rem",
-    fontSize: "1rem",
-    fontWeight: 600,
-    borderRadius: "12px",
-    cursor: "pointer",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-    minWidth: "100px",
-    transition: "transform 0.2s, background-color 0.3s",
-  },
-  tempoNote: {
-    opacity: 0.7,
-    fontStyle: "italic",
-    marginTop: "0.5rem",
-  },
-};

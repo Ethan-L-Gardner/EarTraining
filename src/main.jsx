@@ -5,7 +5,7 @@ import Layout from "./components/Layout";
 import HomePage from "./HomePage";
 import EarTraining from "./EarTraining";
 import TrainingPage from "./TrainingPage"; // your detailed level page
-// import './index.css';
+import "./index.css";  
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
