@@ -1,8 +1,21 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 export default function Layout() {
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white selection:bg-pink-500 selection:text-white">
@@ -17,12 +30,47 @@ export default function Layout() {
           >
             LanceMusic 🎵
           </h1>
-          <button
-            onClick={() => navigate("/")}
-            className="px-8 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700 text-white font-semibold shadow-xl hover:brightness-110 active:scale-95 transition transform duration-200 focus:outline-none focus:ring-4 focus:ring-pink-500/60"
-          >
-            Home
-          </button>
+
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700 text-white font-semibold shadow-lg hover:brightness-110 transition duration-200 focus:outline-none focus:ring-4 focus:ring-pink-500/60"
+            >
+              Menu ▾
+            </button>
+
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-3 w-52 bg-white text-black rounded-xl shadow-2xl overflow-hidden border border-gray-200 animate-fade-in">
+                <button
+                  onClick={() => {
+                    navigate("/");
+                    setDropdownOpen(false);
+                  }}
+                  className="w-full px-5 py-3 text-left hover:bg-gray-100 transition"
+                >
+                  🏠 Home
+                </button>
+                <button
+                  onClick={() => {
+                    navigate("/EarTraining");
+                    setDropdownOpen(false);
+                  }}
+                  className="w-full px-5 py-3 text-left hover:bg-gray-100 transition"
+                >
+                  🎧 Ear Training
+                </button>
+                <button
+                  onClick={() => {
+                    navigate("/AboutMe");
+                    setDropdownOpen(false);
+                  }}
+                  className="w-full px-5 py-3 text-left hover:bg-gray-100 transition"
+                >
+                  👤 About Me
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
