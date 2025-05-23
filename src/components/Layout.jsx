@@ -21,15 +21,19 @@ export default function Layout() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white selection:bg-pink-500 selection:text-white">
       <header className="backdrop-blur-md bg-white/10 border-b border-white/25 sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-8 py-4">
-          <h1
+          <div
             onClick={() => navigate("/")}
             tabIndex={0}
             role="button"
             aria-label="Go to Home"
-            className="text-3xl font-extrabold cursor-pointer hover:text-pink-400 transition duration-300 select-none"
+            className="cursor-pointer flex items-center space-x-2 hover:opacity-80 transition duration-300"
           >
-            LanceMusic 🎵
-          </h1>
+            <img
+              src="/src/assets/logo.png" // Adjust this path based on where your logo file is located
+              alt="LanceMusic Logo"
+              className="h-12 w-auto object-contain"
+            />
+          </div>
 
           <div className="relative" ref={dropdownRef}>
             <button
