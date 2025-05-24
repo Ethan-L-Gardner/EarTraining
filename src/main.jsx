@@ -3,8 +3,8 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import HomePage from "./HomePage";
-import EarTraining from "./EarTraining";
-import TrainingPage from "./TrainingPage"; // your detailed level page
+import EarTraining from "./EarTraining"; //Menu of Ear Training Modules
+import IntervalRecognition from "./EarTrainingPages/IntervalRecognition";
 import "./index.css";  
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -16,7 +16,9 @@ root.render(
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/eartraining" element={<EarTraining />} />
-          <Route path="/training/:level" element={<TrainingPage />} />
+
+          {/* Put specific routes before dynamic ones */}
+          <Route path="/training/interval-recognition" element={<IntervalRecognition />} />
         </Route>
       </Routes>
     </BrowserRouter>

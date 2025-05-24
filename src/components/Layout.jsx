@@ -18,9 +18,9 @@ export default function Layout() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white selection:bg-pink-500 selection:text-white">
-      <header className="backdrop-blur-md bg-white/10 border-b border-white/25 sticky top-0 z-50 shadow-lg">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-8 py-4">
+    <div className="min-h-screen bg-[#E5ECE9] text-[#1F2D2B] selection:bg-[#A3C1AD] selection:text-white">
+      <header className="backdrop-blur-md bg-white/80 border-b border-[#CAD8D4] sticky top-0 z-50 shadow-md">
+        <div className="mx-auto flex items-center justify-between px-8 py-4  max-w-7xl">
           <div
             onClick={() => navigate("/")}
             tabIndex={0}
@@ -29,37 +29,42 @@ export default function Layout() {
             className="cursor-pointer flex items-center space-x-2 hover:opacity-80 transition duration-300"
           >
             <img
-              src="/src/assets/logo.png" // Adjust this path based on where your logo file is located
+              src="/images/logo.png"
               alt="LanceMusic Logo"
-              className="h-12 w-auto object-contain"
+              className="h-12 w-auto object-contain rounded-xl"
             />
           </div>
 
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-700 text-white font-semibold shadow-lg hover:brightness-110 transition duration-200 focus:outline-none focus:ring-4 focus:ring-pink-500/60"
+              className="px-6 py-3 rounded-2xl bg-[#A3C1AD] text-white font-semibold shadow hover:bg-[#8EA798] transition duration-200 focus:outline-none focus:ring-4 focus:ring-[#A3C1AD]/50"
             >
               Menu ▾
             </button>
 
             {dropdownOpen && (
-              <div className="absolute right-0 mt-3 w-52 bg-white text-black rounded-xl shadow-2xl overflow-hidden border border-gray-200 animate-fade-in">
+              <div className="absolute right-0 mt-3 w-52 bg-white text-[#1F2D2B] rounded-xl shadow-xl overflow-hidden border border-[#CAD8D4] animate-fade-in">
                 <button
                   onClick={() => {
                     navigate("/");
                     setDropdownOpen(false);
                   }}
-                  className="w-full px-5 py-3 text-left hover:bg-gray-100 transition"
+                  className="w-full px-5 py-3 text-left flex items-center space-x-3 hover:bg-[#F0F5F3] transition"
                 >
-                  🏠 Home
+                  <img
+                    src="/images/logo.png" // Ensure this path is correct (should be in /public/images)
+                    alt="Home"
+                    className="h-5 w-5 object-contain rounded-md"
+                  />
+                  <span>Home</span>
                 </button>
                 <button
                   onClick={() => {
                     navigate("/EarTraining");
                     setDropdownOpen(false);
                   }}
-                  className="w-full px-5 py-3 text-left hover:bg-gray-100 transition"
+                  className="w-full px-5 py-3 text-left hover:bg-[#F0F5F3] transition"
                 >
                   🎧 Ear Training
                 </button>
@@ -68,7 +73,7 @@ export default function Layout() {
                     navigate("/AboutMe");
                     setDropdownOpen(false);
                   }}
-                  className="w-full px-5 py-3 text-left hover:bg-gray-100 transition"
+                  className="w-full px-5 py-3 text-left hover:bg-[#F0F5F3] transition"
                 >
                   👤 About Me
                 </button>
@@ -78,7 +83,7 @@ export default function Layout() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-8 py-12">
+      <main className="mx-auto px-4 py-4">
         <Outlet />
       </main>
     </div>
