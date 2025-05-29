@@ -188,34 +188,39 @@ export default function IntervalRecognition() {
     setFeedback(null);
   }
 
-  // Submit score to backend
-  async function submitScore() {
-    if (!playerName.trim()) {
-      setSubmitError("Please enter your name.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      const response = await fetch("http://localhost:5000/api/scores", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: playerName.trim(), score: timedScore }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to submit score.");
-      }
-
-      setSubmitSuccess(true);
-    } catch (error) {
-      setSubmitError(error.message || "Something went wrong.");
-    } finally {
-      setIsSubmitting(false);
-    }
+// Submit score to backend
+async function submitScore() {
+  if (!playerName.trim()) {
+    setSubmitError("Please enter your name.");
+    return;
   }
+
+  setIsSubmitting(true);
+  setSubmitError(null);
+
+  try {
+    const response = await fetch("http://localhost:5000/api/scores", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: playerName.trim(),
+        score: timedScore,
+        module: "Interval Recognition",  // 👈 Update this if the module name changes
+        difficulty: difficulty            // 👈 This should already be in your component's state
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to submit score.");
+    }
+
+    setSubmitSuccess(true);
+  } catch (error) {
+    setSubmitError(error.message || "Something went wrong.");
+  } finally {
+    setIsSubmitting(false);
+  }
+}
 
   return (
     <div className="min-h-screen bg-[#E5ECE9] text-gray-900 px-6 py-12 flex justify-center">

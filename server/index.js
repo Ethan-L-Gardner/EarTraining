@@ -33,9 +33,13 @@ app.get("/api/ping", (req, res) => {
 // Save a user's score to MongoDB
 app.post("/api/scores", async (req, res) => {
   try {
-    const { name, score } = req.body;
+    const { name, score, module, difficulty } = req.body;
 
-    const newScore = new Score({ name, score });
+    if (!name || score == null) {
+      return res.status(400).json({ error: "Name and score are required" });
+    }
+
+    const newScore = new Score({ name, score, module, difficulty });
     const saved = await newScore.save();
 
     res.status(201).json(saved);
