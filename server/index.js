@@ -17,7 +17,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true); // Allow tools like Postman
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -30,7 +30,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.options("/*", cors(corsOptions));
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -43,11 +42,15 @@ app.get("/api/ping", (req, res) => {
   res.json({ message: "Backend is working!" });
 });
 
-// Mount your router under /api (this means /api/scores works)
+// Mount routes under /api
 app.use("/api", scoresRouter);
 
+// Error handler with CORS headers
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
+  res.header("Access-Control-Allow-Origin", allowedOrigins.includes(req.headers.origin) ? req.headers.origin : "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+
   if (err.message.startsWith("CORS policy")) {
     return res.status(403).json({ error: err.message });
   }
