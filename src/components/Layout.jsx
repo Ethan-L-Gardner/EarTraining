@@ -70,7 +70,7 @@ export default function Layout() {
                 </button>
                 <button
                   onClick={() => {
-                    navigate("/AboutMe");
+                    navigate("/about");
                     setDropdownOpen(false);
                   }}
                   className="w-full px-5 py-3 text-left hover:bg-[#F0F5F3] transition"
