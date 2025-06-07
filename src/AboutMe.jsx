@@ -26,7 +26,7 @@ export default function AboutMe() {
         <h1 className="text-4xl sm:text-5xl font-extrabold text-[#2F4F4F]">🎻 About Lance Music</h1>
 
         <p className="text-lg sm:text-xl text-[#3B4D48] font-medium max-w-3xl mx-auto">
-          Hi! Welcome to Lance Music, I am a cellist and music enthusiast and this is my personal project to make ear training more intuitive, creative, and fun. Whether you're a beginner trying to recognize intervals or a seasoned player refining your pitch accuracy, this site has some interactive tools and tests designed to sharpen your ear and deepen your connection to music.
+          Hi! Welcome to Lance Music, I am a cellist and music enthusiast and this is my personal project to make ear training more intuitive, creative, and fun (and to play with MERN full stack development!). Whether you're a beginner trying to recognize intervals or a seasoned player refining your pitch accuracy, this site has some interactive tools and tests designed to sharpen your ear and deepen your connection to music.
         </p>
 
         <div className="bg-[#E6F0EA] p-6 rounded-2xl text-left shadow-md">
