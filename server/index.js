@@ -1,8 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
-import cors from "cors";
+import cors from "cors"; // ✅ Keep this
 import dotenv from "dotenv";
-import Score from "./models/Score.js"; // ✅ Import the model
+import Score from "./models/Score.js";
 
 dotenv.config();
 
@@ -10,7 +10,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-const cors = require("cors");
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true,
