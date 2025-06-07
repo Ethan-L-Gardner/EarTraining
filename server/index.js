@@ -13,6 +13,7 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:5173",
   "http://localhost:3000",
+  "https://lancemusic.co.uk",
 ].filter(Boolean);
 
 const corsOptions = {
