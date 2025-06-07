@@ -1,13 +1,14 @@
 import express from "express";
 import mongoose from "mongoose";
-import cors from "cors"; // ✅ Keep this
+import cors from "cors"; 
 import dotenv from "dotenv";
 import Score from "./models/Score.js";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
 
 // Middleware
 app.use(cors({
