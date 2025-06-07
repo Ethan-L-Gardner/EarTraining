@@ -31,42 +31,42 @@ app.get("/api/ping", (req, res) => {
 });
 
 
-// ---------------------------
-// POST /api/scores
-// ---------------------------
-// Save a user's score to MongoDB
-app.post("/api/scores", async (req, res) => {
-  try {
-    const { name, score, module, difficulty } = req.body;
+// // ---------------------------
+// // POST /api/scores
+// // ---------------------------
+// // Save a user's score to MongoDB
+// app.post("/api/scores", async (req, res) => {
+//   try {
+//     const { name, score, module, difficulty } = req.body;
 
-    if (!name || score == null) {
-      return res.status(400).json({ error: "Name and score are required" });
-    }
+//     if (!name || score == null) {
+//       return res.status(400).json({ error: "Name and score are required" });
+//     }
 
-    const newScore = new Score({ name, score, module, difficulty });
-    const saved = await newScore.save();
+//     const newScore = new Score({ name, score, module, difficulty });
+//     const saved = await newScore.save();
 
-    res.status(201).json(saved);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+//     res.status(201).json(saved);
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
 
-// ---------------------------
-// GET /api/scores
-// ---------------------------
-// Return the top 10 high scores
-app.get("/api/scores", async (req, res) => {
-  try {
-    const scores = await Score.find()
-      .sort({ score: -1 }) // Highest first
-      .limit(10);          // Only top 10
+// // ---------------------------
+// // GET /api/scores
+// // ---------------------------
+// // Return the top 10 high scores
+// app.get("/api/scores", async (req, res) => {
+//   try {
+//     const scores = await Score.find()
+//       .sort({ score: -1 }) // Highest first
+//       .limit(10);          // Only top 10
 
-    res.json(scores);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+//     res.json(scores);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// });
 
 // Start the server
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
