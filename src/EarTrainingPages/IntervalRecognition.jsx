@@ -51,13 +51,16 @@ export default function IntervalRecognition() {
   const [correctStreak, setCorrectStreak] = useState(0);
   const [highScore, setHighScore] = useState(0);
 
-  // New states for score submission
+  // Score submission states
   const [playerName, setPlayerName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const audioRef = useRef(null);
+
+  // Use your backend URL from environment variable here
+  const API_BASE_URL = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (!isTimed) {
@@ -165,7 +168,6 @@ export default function IntervalRecognition() {
     }
   }
 
-  // Replay audio for Easy mode button
   function replayAudio() {
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
@@ -173,7 +175,6 @@ export default function IntervalRecognition() {
     }
   }
 
-  // Restart timed challenge
   function restartTimedChallenge() {
     setCountdown(3);
     setTimer(60);
@@ -188,39 +189,48 @@ export default function IntervalRecognition() {
     setFeedback(null);
   }
 
-// Submit score to backend
-async function submitScore() {
-  if (!playerName.trim()) {
-    setSubmitError("Please enter your name.");
-    return;
-  }
-
-  setIsSubmitting(true);
-  setSubmitError(null);
-
-  try {
-    const response = await fetch("http://localhost:5000/api/scores", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: playerName.trim(),
-        score: timedScore,
-        module: "Interval Recognition",  // 👈 Update this if the module name changes
-        difficulty: difficulty            // 👈 This should already be in your component's state
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to submit score.");
+  // Updated submitScore with error parsing and env URL
+  async function submitScore() {
+    if (!playerName.trim()) {
+      setSubmitError("Please enter your name.");
+      return;
     }
 
-    setSubmitSuccess(true);
-  } catch (error) {
-    setSubmitError(error.message || "Something went wrong.");
-  } finally {
-    setIsSubmitting(false);
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/scores`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: playerName.trim(),
+          score: timedScore,
+          module: "Interval Recognition",
+          difficulty: difficulty,
+        }),
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Failed to submit score.";
+        try {
+          const errorData = await response.json();
+          if (errorData?.error) {
+            errorMessage = errorData.error;
+          }
+        } catch {
+          // ignore JSON parse errors, keep default message
+        }
+        throw new Error(errorMessage);
+      }
+
+      setSubmitSuccess(true);
+    } catch (error) {
+      setSubmitError(error.message || "Something went wrong.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
-}
 
   return (
     <div className="min-h-screen bg-[#E5ECE9] text-gray-900 px-6 py-12 flex justify-center">
@@ -298,95 +308,80 @@ async function submitScore() {
             {selectedAnswer && (
               <button
                 onClick={() => {
+                  setSelectedAnswer(null);
+                  setFeedback(null);
                   nextQuestion();
                 }}
-                className="mt-8 px-8 py-3 bg-[#406C58] text-white rounded-full font-semibold hover:bg-[#31513f]"
+                className="mt-8 px-6 py-3 rounded-full bg-[#406C58] text-white font-semibold hover:bg-[#305041] transition-colors duration-200"
               >
-                Next Question
+                Next
               </button>
             )}
+
+            <audio ref={audioRef} />
           </div>
         )}
 
-        {/* Timed mode game over with name input */}
+        {/* Timed challenge game over UI */}
         {gameOver && (
-          <div className="space-y-6 max-w-md mx-auto">
-            <div className="text-4xl font-bold text-red-600">
-              Time's up! Your score: {timedScore}
-            </div>
+          <div className="max-w-lg mx-auto text-center">
+            <h2 className="text-4xl font-bold mb-6 text-[#406C58]">Time's up!</h2>
+            <p className="mb-6 text-xl font-semibold">Your final score: {timedScore}</p>
 
             {!submitSuccess ? (
               <>
-                <div>
-                  <label htmlFor="playerName" className="block mb-2 font-semibold text-[#406C58]">
-                    Enter your name to save your score:
-                  </label>
-                  <input
-                    id="playerName"
-                    type="text"
-                    value={playerName}
-                    onChange={(e) => setPlayerName(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-[#406C58]"
-                    disabled={isSubmitting}
-                  />
-                </div>
-
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-[#406C58]"
+                />
                 {submitError && (
-                  <div className="text-red-600 font-semibold">{submitError}</div>
+                  <p className="text-red-600 mb-4 font-semibold">{submitError}</p>
                 )}
-
                 <button
                   onClick={submitScore}
                   disabled={isSubmitting}
-                  className={`w-full mt-4 py-3 rounded-full font-semibold text-white ${
-                    isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-[#406C58] hover:bg-[#31513f]"
-                  }`}
+                  className="w-full px-6 py-3 rounded-full bg-[#406C58] text-white font-semibold hover:bg-[#305041] transition-colors duration-200"
                 >
-                  {isSubmitting ? "Submitting..." : "Save Score"}
+                  {isSubmitting ? "Submitting..." : "Submit Score"}
                 </button>
               </>
             ) : (
-              <div className="text-green-600 font-semibold text-xl">
-                Score saved successfully! 🎉
-              </div>
+              <p className="text-green-700 font-bold text-xl mb-6">Score submitted successfully!</p>
             )}
 
-            <div className="flex justify-center gap-6 mt-6">
-              <button
-                onClick={restartTimedChallenge}
-                className="px-8 py-3 bg-[#406C58] text-white rounded-full font-semibold hover:bg-[#31513f]"
-              >
-                Try Again
-              </button>
-              <button
-                onClick={() => navigate(-1)}
-                className="px-8 py-3 border border-[#406C58] rounded-full font-semibold text-[#406C58] hover:bg-[#dbe5db]"
-              >
-                Back
-              </button>
-            </div>
+            <button
+              onClick={restartTimedChallenge}
+              className="mt-4 px-6 py-3 rounded-full bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400 transition-colors duration-200"
+            >
+              Play Again
+            </button>
+
+            <button
+              onClick={() => navigate("/")}
+              className="mt-2 px-6 py-3 rounded-full bg-white text-[#406C58] border border-[#406C58] font-semibold hover:bg-[#406C58] hover:text-white transition-colors duration-200"
+            >
+              Return Home
+            </button>
           </div>
         )}
 
-        {/* Non-timed mode UI */}
-        {!isTimed && (
-          <div>
-            <div className="mb-6 text-3xl font-bold text-[#406C58]">
-              {difficulty} Mode
-            </div>
+        {/* Normal mode UI */}
+        {!isTimed && !gameStarted && (
+          <>
+            <div className="mb-6 text-3xl font-bold text-[#406C58]">Interval Recognition</div>
+            <div className="mb-4 text-xl font-medium">Listen and identify the interval:</div>
 
-            <div className="mb-4 text-2xl font-semibold text-[#406C58]">Identify the interval:</div>
+            <button
+              onClick={replayAudio}
+              className="mb-6 px-6 py-3 rounded-full bg-[#406C58] text-white font-semibold hover:bg-[#305041] transition-colors duration-200"
+            >
+              Play Interval
+            </button>
 
-            {difficulty === "Easy" && (
-              <button
-                onClick={replayAudio}
-                className="mb-4 px-6 py-2 bg-[#406C58] text-white rounded-full font-semibold hover:bg-[#31513f]"
-              >
-                Replay Audio
-              </button>
-            )}
-
-            <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto">
+            <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto mb-6">
               {options.map((option) => (
                 <button
                   key={option}
@@ -406,27 +401,32 @@ async function submitScore() {
             </div>
 
             {feedback && (
-              <div className="mt-6 text-2xl font-semibold text-[#406C58]">{feedback}</div>
+              <div className="mb-6 text-2xl font-semibold text-[#406C58]">{feedback}</div>
             )}
 
             {selectedAnswer && (
               <button
-                onClick={nextQuestion}
-                className="mt-8 px-8 py-3 bg-[#406C58] text-white rounded-full font-semibold hover:bg-[#31513f]"
+                onClick={() => {
+                  nextQuestion();
+                  setSelectedAnswer(null);
+                  setFeedback(null);
+                }}
+                className="px-6 py-3 rounded-full bg-[#406C58] text-white font-semibold hover:bg-[#305041] transition-colors duration-200"
               >
-                Next Question
+                Next
               </button>
             )}
 
-            {difficulty === "Easy" && (
-              <div className="mt-8 text-xl font-semibold text-[#406C58]">
-                Current Streak: {correctStreak} | High Score: {highScore}
-              </div>
-            )}
-          </div>
+            <audio ref={audioRef} />
+          </>
         )}
 
-        <audio ref={audioRef} />
+        {/* Easy mode stats */}
+        {!isTimed && difficulty === "Easy" && (
+          <div className="mt-8 text-lg text-[#406C58] font-semibold">
+            Current Streak: {correctStreak} | High Score: {highScore}
+          </div>
+        )}
       </div>
     </div>
   );
