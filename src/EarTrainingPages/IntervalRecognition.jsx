@@ -60,7 +60,7 @@ export default function IntervalRecognition() {
   const audioRef = useRef(null);
 
   // Use your backend URL from environment variable here
-  const API_BASE_URL = process.env.REACT_APP_API_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (!isTimed) {
@@ -200,7 +200,7 @@ export default function IntervalRecognition() {
     setSubmitError(null);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/scores`, {
+      const response = await fetch(`${API_BASE_URL}/api/scores`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -219,7 +219,7 @@ export default function IntervalRecognition() {
             errorMessage = errorData.error;
           }
         } catch {
-          // ignore JSON parse errors, keep default message
+          // ignore JSON parse errors
         }
         throw new Error(errorMessage);
       }
