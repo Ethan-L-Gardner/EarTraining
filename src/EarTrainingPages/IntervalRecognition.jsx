@@ -246,7 +246,7 @@ export default function IntervalRecognition() {
   }
 
   // Function to fetch leaderboard data
-    async function fetchLeaderboard() {
+  async function fetchLeaderboard() {
     setLoadingLeaderboard(true);
     setLeaderboardError(null);
     try {
@@ -278,32 +278,82 @@ export default function IntervalRecognition() {
               key={level}
               onClick={() => setDifficulty(level)}
               disabled={isTimed && gameStarted}
-              className={`px-6 py-2 rounded-full font-semibold transition-all duration-200 ${
-                difficulty === level
+              className={`px-6 py-2 rounded-full font-semibold transition-all duration-200 ${difficulty === level
                   ? "bg-[#406C58] text-white"
                   : "bg-white text-[#406C58] border border-[#406C58]"
-              }`}
+                }`}
             >
               {level}
             </button>
           ))}
         </div>
 
-        {/* Timed Challenge toggle button */}
-        <div className="flex justify-center mb-8">
+        {/* Timed Challenge toggle and Leaderboard buttons */}
+        <div className="flex justify-center items-center mb-8 gap-4 relative">
+          {/* Timed Challenge button */}
           <button
             onClick={() => {
               if (!gameStarted) setIsTimed((t) => !t);
             }}
-            className={`px-6 py-2 rounded-full font-semibold transition-all duration-200 border ${
-              isTimed
+            className={`px-6 py-2 rounded-full font-semibold transition-all duration-200 border ${isTimed
                 ? "bg-[#406C58] text-white border-[#406C58]"
                 : "bg-white text-[#406C58] border-[#406C58]"
-            }`}
+              }`}
           >
             Timed Challenge
           </button>
+
+          {/* Arrow connector */}
+          <span className="text-[#406C58] text-xl">→</span>
+
+          {/* Leaderboard button */}
+          <button
+            onClick={() => setShowLeaderboard(true)}
+            className="px-6 py-2 rounded-full font-semibold transition-colors duration-200 bg-[#406C58] text-white hover:bg-[#305041]"
+          >
+            View Leaderboard
+          </button>
         </div>
+
+        {/* Leaderboard modal */}
+        {showLeaderboard && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-xl shadow-xl max-w-lg w-full relative">
+              <h2 className="text-2xl font-bold text-[#406C58] mb-4 text-center">
+                Top 10 Scores ({difficulty})
+              </h2>
+
+              {loadingLeaderboard ? (
+                <p className="text-center">Loading...</p>
+              ) : leaderboardError ? (
+                <p className="text-red-600 text-center">{leaderboardError}</p>
+              ) : leaderboardData.length === 0 ? (
+                <p className="text-center text-gray-600">No scores yet.</p>
+              ) : (
+                <ul className="text-left space-y-3">
+                  {leaderboardData.map((entry, index) => (
+                    <li key={index} className="flex justify-between border-b pb-2">
+                      <span className="font-medium">{entry.name}</span>
+                      <span>{entry.score} pts</span>
+                      <span className="text-sm text-gray-500">
+                        {new Date(entry.date).toLocaleDateString()}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <div className="text-center mt-6">
+                <button
+                  onClick={() => setShowLeaderboard(false)}
+                  className="px-4 py-2 rounded-full bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400 transition duration-200"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Countdown display */}
         {countdown !== null && (
@@ -323,13 +373,12 @@ export default function IntervalRecognition() {
                   key={option}
                   disabled={selectedAnswer !== null}
                   onClick={() => handleAnswer(option)}
-                  className={`px-4 py-3 rounded-lg text-lg font-semibold border ${
-                    selectedAnswer === option
+                  className={`px-4 py-3 rounded-lg text-lg font-semibold border ${selectedAnswer === option
                       ? option === question.name
                         ? "bg-green-400 border-green-700 text-white"
                         : "bg-red-400 border-red-700 text-white"
                       : "bg-white border-gray-400 hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   {option}
                 </button>
@@ -422,13 +471,12 @@ export default function IntervalRecognition() {
                   key={option}
                   disabled={selectedAnswer !== null}
                   onClick={() => handleAnswer(option)}
-                  className={`px-4 py-3 rounded-lg text-lg font-semibold border ${
-                    selectedAnswer === option
+                  className={`px-4 py-3 rounded-lg text-lg font-semibold border ${selectedAnswer === option
                       ? option === question.name
                         ? "bg-green-400 border-green-700 text-white"
                         : "bg-red-400 border-red-700 text-white"
                       : "bg-white border-gray-400 hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   {option}
                 </button>
@@ -463,53 +511,6 @@ export default function IntervalRecognition() {
           </div>
         )}
       </div>
-      
-      {/* Leaderboard section */}
-      <div className="text-center mt-12">
-        <button
-          onClick={() => setShowLeaderboard(true)}
-          className="px-6 py-3 rounded-full bg-[#406C58] text-white font-semibold hover:bg-[#305041] transition-colors duration-200"
-        >
-          Timed Challenge Leaderboard
-        </button>
-      </div>
-
-      {showLeaderboard && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-xl max-w-lg w-full relative">
-            <h2 className="text-2xl font-bold text-[#406C58] mb-4 text-center">
-              Top 10 Scores ({difficulty})
-            </h2>
-
-            {loadingLeaderboard ? (
-              <p className="text-center">Loading...</p>
-            ) : leaderboardError ? (
-              <p className="text-red-600 text-center">{leaderboardError}</p>
-            ) : leaderboardData.length === 0 ? (
-              <p className="text-center text-gray-600">No scores yet.</p>
-            ) : (
-              <ul className="text-left space-y-3">
-                {leaderboardData.map((entry, index) => (
-                  <li key={index} className="flex justify-between border-b pb-2">
-                    <span className="font-medium">{entry.name}</span>
-                    <span>{entry.score} pts</span>
-                    <span className="text-sm text-gray-500">{new Date(entry.date).toLocaleDateString()}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <div className="text-center mt-6">
-              <button
-                onClick={() => setShowLeaderboard(false)}
-                className="px-4 py-2 rounded-full bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400 transition duration-200"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
