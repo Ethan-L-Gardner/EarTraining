@@ -57,6 +57,12 @@ export default function IntervalRecognition() {
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
+  // Leaderboard retrieval states
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState([]);
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
+  const [leaderboardError, setLeaderboardError] = useState(null);
+
   const audioRef = useRef(null);
 
   // Use your backend URL from environment variable here
@@ -135,6 +141,13 @@ export default function IntervalRecognition() {
       audioRef.current.play().catch((e) => console.warn("Audio error:", e));
     }
   }, [question, difficulty, isTimed, gameStarted]);
+
+  useEffect(() => {
+    if (showLeaderboard) {
+      fetchLeaderboard();
+    }
+  }, [showLeaderboard]);
+
 
   function nextQuestion() {
     const newQ = getRandomInterval();
@@ -229,6 +242,28 @@ export default function IntervalRecognition() {
       setSubmitError(error.message || "Something went wrong.");
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  // Function to fetch leaderboard data
+    async function fetchLeaderboard() {
+    setLoadingLeaderboard(true);
+    setLeaderboardError(null);
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/scores/leaderboard?module=Interval%20Recognition&difficulty=${encodeURIComponent(difficulty)}&limit=10`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to load leaderboard");
+      }
+
+      const data = await response.json();
+      setLeaderboardData(data);
+    } catch (error) {
+      setLeaderboardError(error.message || "Something went wrong");
+    } finally {
+      setLoadingLeaderboard(false);
     }
   }
 
@@ -428,6 +463,54 @@ export default function IntervalRecognition() {
           </div>
         )}
       </div>
+      
+      {/* Leaderboard section */}
+      <div className="text-center mt-12">
+        <button
+          onClick={() => setShowLeaderboard(true)}
+          className="px-6 py-3 rounded-full bg-[#406C58] text-white font-semibold hover:bg-[#305041] transition-colors duration-200"
+        >
+          Timed Challenge Leaderboard
+        </button>
+      </div>
+
+      {showLeaderboard && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-xl max-w-lg w-full relative">
+            <h2 className="text-2xl font-bold text-[#406C58] mb-4 text-center">
+              Top 10 Scores ({difficulty})
+            </h2>
+
+            {loadingLeaderboard ? (
+              <p className="text-center">Loading...</p>
+            ) : leaderboardError ? (
+              <p className="text-red-600 text-center">{leaderboardError}</p>
+            ) : leaderboardData.length === 0 ? (
+              <p className="text-center text-gray-600">No scores yet.</p>
+            ) : (
+              <ul className="text-left space-y-3">
+                {leaderboardData.map((entry, index) => (
+                  <li key={index} className="flex justify-between border-b pb-2">
+                    <span className="font-medium">{entry.name}</span>
+                    <span>{entry.score} pts</span>
+                    <span className="text-sm text-gray-500">{new Date(entry.date).toLocaleDateString()}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <div className="text-center mt-6">
+              <button
+                onClick={() => setShowLeaderboard(false)}
+                className="px-4 py-2 rounded-full bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400 transition duration-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
